@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>StarSky WiFi Setup</title>
+</head>
+
+<body>
+    <h1>StarSky WiFi Setup</h1>
+    <p id="test"></p>
+    <table>
+        <thead>
+            <tr>
+                <td>SSID</td>
+                <td>Signal</td>
+                <td>Encryption</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody id="network-table">
+        </tbody>
+    </table>
+    <a href="/wifi/connect">Connect</a>
+    <script>
+        (function () {
+            setInterval(() => {
+                var Httpreq = new XMLHttpRequest();
+                Httpreq.open("GET", "/wifi/networks", false);
+                Httpreq.send(null);
+
+                var data = JSON.parse(Httpreq.responseText);
+                var rows = [];
+                data["networks"].forEach(network => {
+                    rows.push(`<tr>
+                        <td>${network.ssid}</td>
+                        <td>${network.quality}</td>
+                        <td>${network.encrypted}</td>
+                        <td><button>Connect</button></td>
+                        </tr>`);
+                });
+
+                document.getElementById('network-table').innerHTML = rows.join('');
+            }, 1000);
+        })();
+    </script>
+</body>
+
+</html>
