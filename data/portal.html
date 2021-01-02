@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>WLAN Setup</title>
     <link rel="stylesheet" href="/static/style.min.css" type="text/css" />
+    <script src="/static/atlas.js"></script>
     <style>
         .hero {
             background: #eee;
@@ -41,7 +42,11 @@
             <a class="pagename current" href="#">WLAN Setup</a>
         </div>
     </nav>
-    <button class="btn-close btn btn-sm">×</button>
+    <div id="disconnect" class="container" style="display: none">
+        <div class="hero">
+            <h1>Disconnected!</h1>
+        </div>
+    </div>
     <div class="container">
         <div class="hero">
             <h1>Welcome to Atlas!</h1>
@@ -56,75 +61,6 @@
         <div id="network-list" class="row">
         </div>
     </div>
-    <script>
-        const Atlas = (function () {
-            const networkPath = '/wifi/networks';
-            const networkList = document.getElementById('network-list');
-            const networkConnection = document.getElementById('network-connection');
-
-            function requestJson(url) {
-                if (url === networkPath) {
-                    return window.fetch(networkPath).then(data => data.json());
-                }
-            }
-
-            setInterval(function () {
-                requestJson(networkPath)
-                    .then(data => data.networks)
-                    .then(networks => {
-                        const ssids = {};
-                        const elements = [];
-                        networks = networks
-                            .filter(network => {
-                                if (network.ssid in ssids) {
-                                    ssids[network.ssid] += 1;
-                                    return false;
-                                } else {
-                                    ssids[network.ssid] = 1;
-                                    return true;
-                                }
-                            })
-                            .sort((a, b) => b.quality - a.quality) // quality in descending order
-                            .map(network => {
-                                let form;
-                                if (network.encrypted) {
-                                    form = `<button class="btn btn-sm btn-a" onclick="Atlas.setConnectionPrompt('${network.ssid}'); return false;">Enter Password</button>`
-                                } else {
-                                    form = `<button class="btn btn-sm btn-a" onclick="Atlas.connect('${network.ssid}'', ''); return false;">Connect</button>`
-                                }
-                                const element = document.createElement('div');
-                                element.className = 'col c4';
-                                element.innerHTML = `
-                                <h3>${network.ssid} ${network.encrypted ? '&#128274;' : ''} ${ssids[network.ssid] > 1 ? '&#9850;' : ''}</h3>
-                                <p>Quality: ${network.quality}</p>
-                                ${form}`;
-                                return element;
-                            });
-
-                        networkList.innerHTML = '';
-                        networks.forEach(network => {
-                            networkList.appendChild(network);
-                        });
-                    });
-            }, 500);
-
-            return {
-                setConnectionPrompt: function (ssid) {
-                    networkConnection.style.display = 'block';
-                    networkConnection.innerHTML = `
-                    <h2>Connect</h2>
-                    <form>
-                        <label for="ssidInput">SSID:<input id="ssidInput" type="text" value="${ssid}" readonly /></label><br />
-                        <label for="ssidInput">Password:<input id="passInput" type="text" placeholder="Enter Password" /></label>
-                        <button class="btn btn-sm btn-a">Connect</button>
-                    </form>
-                    `;
-                },
-                connect: function (ssid, pass) {
-                }
-            }
-        })();
-    </script>
 </body>
 
 </html>

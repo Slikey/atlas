@@ -34,10 +34,11 @@ void WiFiModuleClass::setup()
     _time_next_scan = millis();
 
     // connection endpoint to accept a connection attempt, can only be called from captive portal
-    WebServer.on("/wifi/connect", HTTP_GET, [this](AsyncWebServerRequest *request) {
+    WebServer.on("/wifi/connect", HTTP_POST, [this](AsyncWebServerRequest *request) {
                  // parse request data
-                 String ssidArg = request->arg(F("ssid")); //"Honigtopf";
-                 String passArg = request->arg(F("pass")); //"21356775765776304081";
+                 String ssidArg = request->arg(F("ssid"));
+                 String passArg = request->arg(F("pass"));
+
                  if (!ssidArg)
                  {
                      request->send(400);
@@ -46,6 +47,7 @@ void WiFiModuleClass::setup()
 
                  const char *ssid = ssidArg.c_str();
                  const char *pass = passArg ? passArg.c_str() : "";
+                 Serial.printf("Connection Request:\n\tSSID: %s\n\tPass: %s\n", ssid, pass);
 
                  // attempt to connect
                  if (WiFi.begin(ssid, pass) == WL_CONNECT_FAILED)
