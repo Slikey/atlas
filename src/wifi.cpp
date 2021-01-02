@@ -62,18 +62,17 @@ void WiFiModuleClass::setup()
                  StaticJsonDocument<128 * (SETUP_NETWORKS_COUNT + 1)> doc;
                  JsonArray networks = doc.createNestedArray("networks");
 
-                 // currently only show a limitted amount of results to enable stack JSON usage, we need to add pagination here
-                 uint8_t counter = SETUP_NETWORKS_COUNT;
-                 for (auto network : _networks)
+                 int8_t n = WiFi.scanComplete();
+                 if (n >= 0)
                  {
-                     JsonObject networkJson = networks.createNestedObject();
-                     networkJson["ssid"] = network.ssid;
-                     networkJson["quality"] = network.quality;
-                     networkJson["encrypted"] = network.encrypted;
-
-                     if (--counter == 0)
+                     if (n > SETUP_NETWORKS_COUNT)
+                         n = SETUP_NETWORKS_COUNT;
+                     for (int i = 0; i < n; i++)
                      {
-                         break;
+                         JsonObject networkJson = networks.createNestedObject();
+                         networkJson["ssid"] = WiFi.SSID(i);
+                         networkJson["quality"] = _getQualityFromRSSI(WiFi.RSSI(i));
+                         networkJson["encrypted"] = WiFi.encryptionType(i) != ENC_TYPE_NONE;
                      }
                  }
 
@@ -145,25 +144,6 @@ void WiFiModuleClass::_loopScanNetworks()
         WiFi.scanNetworks(true);
         _time_next_scan = millis() + SETUP_WIFI_SCAN_INTERVAL;
     }
-
-    int8_t n = WiFi.scanComplete();
-    if (n >= 0)
-    {
-        _networks.clear();
-        for (int i = 0; i < n; i++)
-        {
-            WiFiNetwork network;
-            strcpy(network.ssid, WiFi.SSID(i).c_str());
-            network.quality = _getQualityFromRSSI(WiFi.RSSI(i));
-            network.encrypted = WiFi.encryptionType(i) != ENC_TYPE_NONE;
-            _networks.push_back(network);
-        }
-
-        // sort by quality, find a better sorting to avoid copy
-        std::sort(_networks.begin(), _networks.end(), [](WiFiNetwork a, WiFiNetwork b) {
-            return a.quality > b.quality;
-        });
-    }
 }
 
 void WiFiModuleClass::_start()
@@ -198,6 +178,7 @@ void WiFiModuleClass::_stop()
     _running = false;
 
     WiFi.softAPdisconnect();
+    WiFi.scanDelete();
     WiFi.mode(WIFI_STA);
 
     _dns_server.stop();

@@ -9,6 +9,9 @@ void setup()
 {
   SerialModule.setup();
   StorageModule.setup();
+
+  WebServer.serveStatic("/static/", LittleFS, "/static/");
+
   WiFiModule.setup();
   BacklightModule.setup();
   WebServer.begin();

@@ -3,18 +3,11 @@
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
 #include "web.hpp"
-
-typedef struct
-{
-    char ssid[33];
-    uint8_t quality;
-    bool encrypted;
-} WiFiNetwork;
+#include <set>
 
 class WiFiModuleClass
 {
 private:
-    std::vector<WiFiNetwork> _networks;
     uint32_t _time_next_scan;
     WiFiEventHandler _gotIpEventHandler, _disconnectedEventHandler;
     DNSServer _dns_server;

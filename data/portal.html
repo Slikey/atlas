@@ -1,46 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 
 <head>
-    <title>StarSky WiFi Setup</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WLAN Setup</title>
+    <link rel="stylesheet" href="/static/style.min.css" type="text/css" />
+    <style>
+        .hero {
+            background: #eee;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 1em;
+        }
+
+        .hero h1 {
+            margin-top: 0;
+            margin-bottom: 0.3em;
+        }
+
+        .c4 {
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .c4 h3 {
+            margin-top: 0;
+        }
+
+        .c4 a {
+            margin-top: 10px;
+            display: inline-block;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>StarSky WiFi Setup</h1>
-    <p id="test"></p>
-    <table>
-        <thead>
-            <tr>
-                <td>SSID</td>
-                <td>Signal</td>
-                <td>Encryption</td>
-                <td></td>
-            </tr>
-        </thead>
-        <tbody id="network-table">
-        </tbody>
-    </table>
-    <a href="/wifi/connect">Connect</a>
+    <nav class="nav" tabindex="-1" onclick="this.focus()">
+        <div class="container">
+            <a class="pagename current" href="#">WLAN Setup</a>
+        </div>
+    </nav>
+    <button class="btn-close btn btn-sm">×</button>
+    <div class="container">
+        <div class="hero">
+            <h1>Welcome to Atlas!</h1>
+            <p>We need to connect your device to your local network. Please select a network below and enter it's
+                password.</p>
+            <p>Once you connect, you can reach your device using your local network. If you need to disconnect the
+                device
+                either press the disconnect button on your device or use the app.</p>
+        </div>
+        <div class="hero" id="network-connection" style="display: none">
+        </div>
+        <div id="network-list" class="row">
+        </div>
+    </div>
     <script>
-        (function () {
-            setInterval(() => {
-                var Httpreq = new XMLHttpRequest();
-                Httpreq.open("GET", "/wifi/networks", false);
-                Httpreq.send(null);
+        const Atlas = (function () {
+            const networkPath = '/wifi/networks';
+            const networkList = document.getElementById('network-list');
+            const networkConnection = document.getElementById('network-connection');
 
-                var data = JSON.parse(Httpreq.responseText);
-                var rows = [];
-                data["networks"].forEach(network => {
-                    rows.push(`<tr>
-                        <td>${network.ssid}</td>
-                        <td>${network.quality}</td>
-                        <td>${network.encrypted}</td>
-                        <td><button>Connect</button></td>
-                        </tr>`);
-                });
+            function requestJson(url) {
+                if (url === networkPath) {
+                    return window.fetch(networkPath).then(data => data.json());
+                }
+            }
 
-                document.getElementById('network-table').innerHTML = rows.join('');
-            }, 1000);
+            setInterval(function () {
+                requestJson(networkPath)
+                    .then(data => data.networks)
+                    .then(networks => {
+                        const ssids = {};
+                        const elements = [];
+                        networks = networks
+                            .filter(network => {
+                                if (network.ssid in ssids) {
+                                    ssids[network.ssid] += 1;
+                                    return false;
+                                } else {
+                                    ssids[network.ssid] = 1;
+                                    return true;
+                                }
+                            })
+                            .sort((a, b) => b.quality - a.quality) // quality in descending order
+                            .map(network => {
+                                let form;
+                                if (network.encrypted) {
+                                    form = `<button class="btn btn-sm btn-a" onclick="Atlas.setConnectionPrompt('${network.ssid}'); return false;">Enter Password</button>`
+                                } else {
+                                    form = `<button class="btn btn-sm btn-a" onclick="Atlas.connect('${network.ssid}'', ''); return false;">Connect</button>`
+                                }
+                                const element = document.createElement('div');
+                                element.className = 'col c4';
+                                element.innerHTML = `
+                                <h3>${network.ssid} ${network.encrypted ? '&#128274;' : ''} ${ssids[network.ssid] > 1 ? '&#9850;' : ''}</h3>
+                                <p>Quality: ${network.quality}</p>
+                                ${form}`;
+                                return element;
+                            });
+
+                        networkList.innerHTML = '';
+                        networks.forEach(network => {
+                            networkList.appendChild(network);
+                        });
+                    });
+            }, 500);
+
+            return {
+                setConnectionPrompt: function (ssid) {
+                    networkConnection.style.display = 'block';
+                    networkConnection.innerHTML = `
+                    <h2>Connect</h2>
+                    <form>
+                        <label for="ssidInput">SSID:<input id="ssidInput" type="text" value="${ssid}" readonly /></label><br />
+                        <label for="ssidInput">Password:<input id="passInput" type="text" placeholder="Enter Password" /></label>
+                        <button class="btn btn-sm btn-a">Connect</button>
+                    </form>
+                    `;
+                },
+                connect: function (ssid, pass) {
+                }
+            }
         })();
     </script>
 </body>
