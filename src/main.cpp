@@ -4,7 +4,7 @@
 #include "wifi.hpp"
 #include "backlight.hpp"
 
-WiFiModuleClass WiFiModule("StarSky");
+WiFiModuleClass WiFiModule("Atlas", Serial, LittleFS);
 
 void setup()
 {

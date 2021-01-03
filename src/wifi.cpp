@@ -2,24 +2,26 @@
 
 #include <ArduinoJson.h>
 
-#include "storage.hpp"
-#include "serial.hpp"
-
 #define SETUP_AP_IP 172, 0, 0, 1
 #define SETUP_AP_GATEWAY SETUP_AP_IP
 #define SETUP_AP_SUBNET 255, 255, 255, 0
-#define HTTP_PORT 80
 #define SETUP_DNS_PORT 53
 #define SETUP_WIFI_SCAN_INTERVAL 10000
-#define SETUP_NETWORKS_COUNT 10
 
-WiFiModuleClass::WiFiModuleClass(String ap_ssid) : _ap_ssid(ap_ssid),
-                                                   _ap_ip(SETUP_AP_IP),
-                                                   _ap_gateway(SETUP_AP_GATEWAY),
-                                                   _ap_subnet(SETUP_AP_SUBNET),
-                                                   _dns_port(SETUP_DNS_PORT),
-                                                   _web_server(HTTP_PORT),
-                                                   _time_scan_interval(SETUP_WIFI_SCAN_INTERVAL)
+#define SETUP_HTTP_PORT 80
+#define SETUP_HTTP_CACHE_CONTROL "max-age=31536000"
+
+WiFiModuleClass::WiFiModuleClass(String ap_ssid,
+                                 Print &print,
+                                 fs::FS &fs) : _ap_ssid(ap_ssid),
+                                               _print(print),
+                                               _fs(fs),
+                                               _ap_ip(SETUP_AP_IP),
+                                               _ap_gateway(SETUP_AP_GATEWAY),
+                                               _ap_subnet(SETUP_AP_SUBNET),
+                                               _dns_port(SETUP_DNS_PORT),
+                                               _web_server(SETUP_HTTP_PORT),
+                                               _time_scan_interval(SETUP_WIFI_SCAN_INTERVAL)
 {
 }
 
@@ -34,9 +36,9 @@ void WiFiModuleClass::setup()
 
     // fired when we successfully connected to a wifi network and received an IP address
     _gotIpEventHandler = WiFi.onStationModeGotIP([&](const WiFiEventStationModeGotIP &event) {
-        Serial.print(F("Got IP: "));
-        Serial.print(WiFi.localIP());
-        Serial.println();
+        _print.print(F("Got IP: "));
+        _print.print(WiFi.localIP());
+        _print.println();
 
         _stop();
     });
@@ -59,7 +61,7 @@ void WiFiModuleClass::setup()
 
                    const char *ssid = ssidArg.c_str();
                    const char *pass = passArg ? passArg.c_str() : "";
-                   Serial.printf("Connection Request:\n\tSSID: %s\n\tPass: %s\n", ssid, pass);
+                   _print.printf("Connection Request:\n\tSSID: %s\n\tPass: %s\n", ssid, pass);
 
                    // attempt to connect
                    if (WiFi.begin(ssid, pass) == WL_CONNECT_FAILED)
@@ -105,9 +107,9 @@ void WiFiModuleClass::setup()
         .setFilter(ON_STA_FILTER);
 
     // captive portal only responds in AP wifi connections
-    _web_server.serveStatic("/static/", LittleFS, "/static/", HTTP_CACHE_CONTROL);
-    _web_server.serveStatic("/", LittleFS, "/ap", HTTP_CACHE_CONTROL).setFilter(ON_AP_FILTER);
-    _web_server.serveStatic("/", LittleFS, "/sta", HTTP_CACHE_CONTROL).setFilter(ON_STA_FILTER);
+    _web_server.serveStatic("/static/", _fs, "/static/", SETUP_HTTP_CACHE_CONTROL);
+    _web_server.serveStatic("/", _fs, "/ap/", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_AP_FILTER);
+    _web_server.serveStatic("/", _fs, "/sta/", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_STA_FILTER);
 
     // redirect to /portal.html when called from AP to create captive portal
     _web_server.onNotFound([this](AsyncWebServerRequest *request) {
@@ -127,9 +129,9 @@ void WiFiModuleClass::setup()
     String ssid = WiFi.SSID();
     if (!ssid.isEmpty())
     {
-        Serial.printf("Connecting to WiFi: %s\n", ssid.c_str());
+        _print.printf("Connecting to WiFi: %s\n", ssid.c_str());
         wl_status_t status = WiFi.begin();
-        Serial.printf("            Status: %u\n", status);
+        _print.printf("            Status: %u\n", status);
         if (status == WL_CONNECT_FAILED)
         { // illegal data stored or non at all
             _start();
@@ -178,7 +180,7 @@ void WiFiModuleClass::_start()
         return;
     }
 
-    _dns_server.start(SETUP_DNS_PORT, F("*"), _ap_ip);
+    _dns_server.start(_dns_port, F("*"), _ap_ip);
 
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAPConfig(_ap_ip, _ap_gateway, _ap_subnet);
@@ -202,24 +204,21 @@ void WiFiModuleClass::_stop()
 
     _dns_server.stop();
 
-    Serial.println(F("Stopped setup!"));
+    _print.println(F("Stopped setup!"));
 }
 
 uint8_t WiFiModuleClass::_getQualityFromRSSI(int32_t rssi)
 {
-    int quality = 0;
-
     if (rssi <= -100)
     {
-        quality = 0;
+        return 0;
     }
     else if (rssi >= -50)
     {
-        quality = 100;
+        return 100;
     }
     else
     {
-        quality = 2 * (rssi + 100);
+        return 2 * (rssi + 100);
     }
-    return quality;
 }

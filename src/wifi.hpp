@@ -1,21 +1,28 @@
 #pragma once
 
 #include <ESP8266WiFi.h>
-#include <DNSServer.h>
+#include <FS.h>
 #include <ESPAsyncWebServer.h>
+#include <DNSServer.h>
 
-#define HTTP_CACHE_CONTROL "max-age=31536000"
+#ifndef SETUP_NETWORKS_COUNT
+#define SETUP_NETWORKS_COUNT 10
+#endif
 
 class WiFiModuleClass
 {
 private:
     String _ap_ssid;
+    Print &_print;
+    FS &_fs;
+
     IPAddress _ap_ip, _ap_gateway, _ap_subnet;
+    WiFiEventHandler _gotIpEventHandler, _disconnectedEventHandler;
+
+    DNSServer _dns_server;
     uint16_t _dns_port;
 
     AsyncWebServer _web_server;
-    WiFiEventHandler _gotIpEventHandler, _disconnectedEventHandler;
-    DNSServer _dns_server;
 
     uint32_t _time_scan_interval;
     uint32_t _time_next_scan;
@@ -30,7 +37,7 @@ private:
     uint8_t _getQualityFromRSSI(int32_t);
 
 public:
-    WiFiModuleClass(String ap_ssid);
+    WiFiModuleClass(String ap_ssid, Print &print, fs::FS &fs);
     void setup();
     void loop();
 };
