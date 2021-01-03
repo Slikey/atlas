@@ -223,5 +223,3 @@ uint8_t WiFiModuleClass::_getQualityFromRSSI(int32_t rssi)
     }
     return quality;
 }
-
-WiFiModuleClass WiFiModule;

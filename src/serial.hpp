@@ -22,6 +22,8 @@ private:
 public:
     void setup();
     void loop();
+    void flag_next_debug_now();
+    void set_interval(uint32_t v);
 };
 
 extern SerialModuleClass SerialModule;

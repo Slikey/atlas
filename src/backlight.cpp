@@ -26,6 +26,7 @@ void BacklightModuleClass::setup()
     pinMode(BACKLIGHT_PIN, OUTPUT);
     setValue(0);
 
+/*
     WebServer.on("/api/backlight/set", HTTP_POST, [&](AsyncWebServerRequest *request) {
         String valueArg = request->arg("value");
         uint8_t value = 0;
@@ -46,6 +47,7 @@ void BacklightModuleClass::setup()
 
         request->send(200);
     });
+    */
 }
 
 void BacklightModuleClass::loop()
