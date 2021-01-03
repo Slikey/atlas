@@ -26,4 +26,14 @@ void SerialModuleClass::loop()
 #endif
 }
 
+void SerialModuleClass::flag_next_debug_now()
+{
+    _next_debug_print = millis();
+}
+
+void SerialModuleClass::set_interval(uint32_t v)
+{
+    _interval_debug_print = v;
+}
+
 SerialModuleClass SerialModule;

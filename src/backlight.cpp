@@ -1,7 +1,7 @@
 #include "backlight.hpp"
 
 #include "storage.hpp"
-#include "web.hpp"
+#include "wifi.hpp"
 
 #define BACKLIGHT_PIN D4
 
