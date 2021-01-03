@@ -8,67 +8,81 @@
     <meta name="author" content="Kevin Carstens">
     <title>Starter Template · Bootstrap v5.0</title>
     <link href="/static/bootstrap.min.css" rel="stylesheet" />
-    <link href="../static/bootstrap.min.css" rel="stylesheet" />
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Atlas Setup</a>
-        </div>
-    </nav>
     <main class="container">
-        <div class="bg-light p-5 rounded">
+        <div id="container-header" class="bg-light p-5">
             <h1>Welcome to Atlas!</h1>
-            <p class="lead">We need to connect your device to your local network. Please select a network below and
-                enter it's password. <br />
-                Once you connect, you can reach your device using your local network. <br />
-                If you need to disconnect the device either press the disconnect button on your device or use the app.
-            </p>
+            <p class="lead">Let's connect your device to your WLAN network.</p>
         </div>
-        <div class="bg-light p-5">
+        <div id="container-settings" class="bg-light p-5">
+            <h3>Connection Settings</h3>
+            <p>Enter your settings for the WLAN network.</p>
+            <form>
+                <div class="mb-3 row">
+                    <label for="configInputSSID" class="col-sm-2 col-form-label">Network SSID</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control-plaintext" id="configInputSSID" value="House Network"
+                            readonly>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="configInputPassword" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="configInputPassword"
+                            placeholder="Enter Password" />
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button id="btn-settings-connect" class="btn btn-outline-success" type="button">Connect</button>
+                    <button if="btn-settings-cancel" class="btn btn-outline-danger" type="button">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div id="container-list" class="bg-light p-5">
+            <h3>Network List</h3>
+            <p>This list displays all WLAN networks in range. This list is constantly updated. If you don't see your
+                network, make sure it is not hidden and discoverable or click the button below and add a custom network.
+            </p>
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Signal</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Protected</th>
-                        <th scope="col">Mesh</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="table-network-list">
                     <tr>
                         <td>
                             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M21,4H16V20H21V4M14,9H9V20H14V9M7,14H2V20H7V14Z" />
                             </svg>
-                        </td>
-                        <td>House Network</td>
-                        <td>&#128274;</td>
-                        <td>
                             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="M10,2C8.89,2 8,2.89 8,4V7C8,8.11 8.89,9 10,9H11V11H2V13H6V15H5C3.89,15 3,15.89 3,17V20C3,21.11 3.89,22 5,22H9C10.11,22 11,21.11 11,20V17C11,15.89 10.11,15 9,15H8V13H16V15H15C13.89,15 13,15.89 13,17V20C13,21.11 13.89,22 15,22H19C20.11,22 21,21.11 21,20V17C21,15.89 20.11,15 19,15H18V13H22V11H13V9H14C15.11,9 16,8.11 16,7V4C16,2.89 15.11,2 14,2H10M10,4H14V7H10V4M5,17H9V20H5V17M15,17H19V20H15V17Z" />
                             </svg>
                         </td>
-                        <td><button type="button" class="btn btn-sm btn-success">Connect</button></td>
+                        <td>House Network</td>
+                        <td class="d-grid">
+                            <button type="button" class="btn btn-sm btn-success">Enter Password</button>
+                        </td>
                     </tr>
                     <tr>
                         <td>
                             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M21,4H16V20H21V4M14,9H9V20H14V9M7,14H2V20H7V14Z" />
                             </svg>
-                        </td>
-                        <td>Guest Network</td>
-                        <td></td>
-                        <td>
                             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="M10,2C8.89,2 8,2.89 8,4V7C8,8.11 8.89,9 10,9H11V11H2V13H6V15H5C3.89,15 3,15.89 3,17V20C3,21.11 3.89,22 5,22H9C10.11,22 11,21.11 11,20V17C11,15.89 10.11,15 9,15H8V13H16V15H15C13.89,15 13,15.89 13,17V20C13,21.11 13.89,22 15,22H19C20.11,22 21,21.11 21,20V17C21,15.89 20.11,15 19,15H18V13H22V11H13V9H14C15.11,9 16,8.11 16,7V4C16,2.89 15.11,2 14,2H10M10,4H14V7H10V4M5,17H9V20H5V17M15,17H19V20H15V17Z" />
                             </svg>
                         </td>
-                        <td><button type="button" class="btn btn-sm btn-success">Connect</button></td>
+                        <td>Guest Network</td>
+                        <td class="d-grid">
+                            <button type="button" class="btn btn-sm btn-success">Connect</button>
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -76,16 +90,15 @@
                                 <path fill="currentColor"
                                     d="M19.5,5.5V18.5H17.5V5.5H19.5M21,4H16V20H21V4M14,9H9V20H14V9M7,14H2V20H7V14Z" />
                             </svg>
-                        </td>
-                        <td>Neighbor Network</td>
-                        <td>&#128274;</td>
-                        <td>
                             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                     d="M10,2C8.89,2 8,2.89 8,4V7C8,8.11 8.89,9 10,9H11V11H2V13H6V15H5C3.89,15 3,15.89 3,17V20C3,21.11 3.89,22 5,22H9C10.11,22 11,21.11 11,20V17C11,15.89 10.11,15 9,15H8V13H16V15H15C13.89,15 13,15.89 13,17V20C13,21.11 13.89,22 15,22H19C20.11,22 21,21.11 21,20V17C21,15.89 20.11,15 19,15H18V13H22V11H13V9H14C15.11,9 16,8.11 16,7V4C16,2.89 15.11,2 14,2H10M10,4H14V7H10V4M5,17H9V20H5V17M15,17H19V20H15V17Z" />
                             </svg>
                         </td>
-                        <td><button type="button" class="btn btn-sm btn-success">Connect</button></td>
+                        <td>Neighbor Network</td>
+                        <td class="d-grid">
+                            <button type="button" class="btn btn-sm btn-success">Enter Password</button>
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -95,9 +108,9 @@
                             </svg>
                         </td>
                         <td>Distant Neighbor Network</td>
-                        <td>&#128274;</td>
-                        <td></td>
-                        <td><button type="button" class="btn btn-sm btn-success">Connect</button></td>
+                        <td class="d-grid">
+                            <button type="button" class="btn btn-sm btn-success">Enter Password</button>
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -107,23 +120,29 @@
                             </svg>
                         </td>
                         <td>§)(%/§"&T%"") Network</td>
-                        <td>&#128274;</td>
-                        <td></td>
-                        <td><button type="button" class="btn btn-sm btn-success">Connect</button></td>
+                        <td class="d-grid">
+                            <button type="button" class="btn btn-sm btn-success">Enter Password</button>
+                        </td>
                     </tr>
                     <tr>
-                        <td colspan="5" class="text-center"><small>Loading...</small></td>
+                        <td colspan="5" class="text-center"><small>We'll keep updating...</small></td>
                     </tr>
                 </tbody>
             </table>
+            <button id="btn-list-custom" class="btn btn-sm btn-outline-primary">Custom SSID & password</button>
+        </div>
+        <div id="container-disconnected" class="bg-light p-5">
+            <h3>Disconnected</h3>
+            <p>You have been disconnected from the setup. This probably means you've successfully connected your device
+                to the network.</p>
         </div>
     </main>
     <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="love">Made with <i class="icon ion-heart"></i> by Kevin Carstens</p>
+        <p class="love">Made with &#9829; by Kevin Carstens</p>
     </footer>
 
     <script src="/static/bootstrap.bundle.min.js"></script>
-    <!--<script src="/atlas.js"></script>-->
+    <script src="/atlas.js"></script>
 </body>
 
 </html>
