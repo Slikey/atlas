@@ -115,7 +115,7 @@ void WiFiModuleClass::setup()
     _web_server.onNotFound([this](AsyncWebServerRequest *request) {
         if (request->client()->localIP() == _ap_ip)
         {
-            request->redirect("/portal.html");
+            request->redirect("/index.html");
             return;
         }
 
