@@ -12,11 +12,11 @@
 class WiFiModuleClass
 {
 private:
-    String _ap_ssid;
+    const String _ap_ssid;
     Print &_print;
     FS &_fs;
 
-    IPAddress _ap_ip, _ap_gateway, _ap_subnet;
+    const IPAddress _ap_ip, _ap_gateway, _ap_subnet;
     WiFiEventHandler _gotIpEventHandler, _disconnectedEventHandler;
 
     DNSServer _dns_server;
@@ -40,4 +40,6 @@ public:
     WiFiModuleClass(String ap_ssid, Print &print, fs::FS &fs);
     void setup();
     void loop();
+
+    AsyncWebServer &getWebServer();
 };

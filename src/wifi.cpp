@@ -60,7 +60,7 @@ void WiFiModuleClass::setup()
                    }
 
                    const char *ssid = ssidArg.c_str();
-                   const char *pass = passArg ? passArg.c_str() : "";
+                   const char *pass = passArg ? passArg.c_str() : nullptr;
                    _print.printf("Connection Request:\n\tSSID: %s\n\tPass: %s\n", ssid, pass);
 
                    // attempt to connect
@@ -110,6 +110,7 @@ void WiFiModuleClass::setup()
     _web_server.serveStatic("/static/", _fs, "/static/", SETUP_HTTP_CACHE_CONTROL);
     _web_server.serveStatic("/", _fs, "/ap/", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_AP_FILTER);
     _web_server.serveStatic("/", _fs, "/sta/", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_STA_FILTER);
+    _web_server.rewrite("/", "/index.html");
 
     // redirect to /portal.html when called from AP to create captive portal
     _web_server.onNotFound([this](AsyncWebServerRequest *request) {
@@ -221,4 +222,9 @@ uint8_t WiFiModuleClass::_getQualityFromRSSI(int32_t rssi)
     {
         return 2 * (rssi + 100);
     }
+}
+
+AsyncWebServer &WiFiModuleClass::getWebServer()
+{
+    return _web_server;
 }

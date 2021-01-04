@@ -1,24 +1,21 @@
-// Libraries
-#include "serial.hpp"
-#include "storage.hpp"
+#include <Arduino.h>
+#include <LittleFS.h>
+
 #include "wifi.hpp"
 #include "backlight.hpp"
+
+#define SERIAL_BAUD 2000000
 
 WiFiModuleClass WiFiModule("Atlas", Serial, LittleFS);
 
 void setup()
 {
-  SerialModule.setup();
-  StorageModule.setup();
-
+  Serial.begin(SERIAL_BAUD);
+  LittleFS.begin();
   WiFiModule.setup();
-  BacklightModule.setup();
 }
 
 void loop()
 {
-  SerialModule.loop();
-  StorageModule.loop();
   WiFiModule.loop();
-  BacklightModule.loop();
 }
