@@ -40,20 +40,14 @@
         <div id="container-settings" class="bg-light p-5" style="display: none;">
             <h3>Connection Settings</h3>
             <p>Enter your settings for the WLAN network.</p>
-            <form>
-                <div class="mb-3 row">
-                    <label for="configInputSSID" class="col-sm-2 col-form-label">Network SSID</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control-plaintext" id="configInputSSID" value="House Network"
-                            readonly>
-                    </div>
+            <form class="row g-3">
+                <div class="col-12">
+                    <label for="configInputSSID" class="form-label">Network SSID</label>
+                    <input type="text" class="form-control" id="configInputSSID" />
                 </div>
-                <div class="mb-3 row">
-                    <label for="configInputPassword" class="col-sm-2 col-form-label">Password</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="configInputPassword"
-                            placeholder="Enter Password" />
-                    </div>
+                <div class="col-12">
+                    <label for="configInputPassword" class="form-label">Password</label>
+                    <input type="text" class="form-control" id="configInputPassword" placeholder="Enter Password" />
                 </div>
                 <div class="d-grid gap-2">
                     <button id="btn-settings-connect" class="btn btn-outline-success" type="button">Connect</button>
