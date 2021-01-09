@@ -108,15 +108,14 @@ void WiFiModuleClass::setup()
 
     // captive portal only responds in AP wifi connections
     _web_server.serveStatic("/static/", _fs, "/static/", SETUP_HTTP_CACHE_CONTROL);
-    _web_server.serveStatic("/", _fs, "/ap/", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_AP_FILTER);
-    _web_server.serveStatic("/", _fs, "/sta/", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_STA_FILTER);
+    _web_server.serveStatic("/index.html", _fs, "/portal.html", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_AP_FILTER);
     _web_server.rewrite("/", "/index.html");
 
     // redirect to /portal.html when called from AP to create captive portal
     _web_server.onNotFound([this](AsyncWebServerRequest *request) {
         if (request->client()->localIP() == _ap_ip)
         {
-            request->redirect("/index.html");
+            request->redirect("/");
             return;
         }
 

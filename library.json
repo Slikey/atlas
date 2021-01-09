@@ -1,18 +1,23 @@
 {
     "name": "Atlas",
-    "keywords": "",
     "description": "An async captive portal framework",
+    "keywords": "",
+    "license": "MIT",
     "homepage": "https://github.com/Slikey/atlas",
     "repository": {
         "type": "git",
         "url": "https://github.com/Slikey/atlas"
     },
+    "authors": [
+        {
+            "name": "Kevin Carstens",
+            "email": "slikey@hypixelstudios.com",
+            "url": "https://twitter.com/slikey_dev",
+            "maintainer": true
+        }
+    ],
     "version": "0.0.1",
     "frameworks": "arduino",
-    "platforms": "*",
-    "dependencies": [
-        {
-            "name": "SPI"
-        }
-    ]
+    "platforms": "esp8266",
+    "dependencies": []
 }
