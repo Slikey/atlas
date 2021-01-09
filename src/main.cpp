@@ -10,7 +10,7 @@ WiFiModuleClass WiFiModule("Atlas", Serial, LittleFS);
 
 void setup()
 {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(SERIAL_BAUD, SERIAL_8N1, SERIAL_TX_ONLY);
   LittleFS.begin();
   WiFiModule.setup();
 }
