@@ -3,16 +3,22 @@
 
 #include "wifi.hpp"
 #include "backlight.hpp"
+#include <map>
 
 #define SERIAL_BAUD 2000000
+
+std::map<String, String> string_maps = {
+    {"title", "Atlas"},
+    {"home", "Home"},
+    {"metrics", "Metrics"},
+    {"settings", "Settings"}};
 
 WiFiModuleClass wifi("Atlas", Serial, LittleFS);
 
 String processor_portal(const String &var)
 {
-  if (var == "HELLO_FROM_TEMPLATE")
-    return F("Hello world!");
-  return String();
+  const String &s = string_maps[var];
+  return s ? s : String();
 }
 
 void setup()
