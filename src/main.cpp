@@ -6,16 +6,27 @@
 
 #define SERIAL_BAUD 2000000
 
-WiFiModuleClass WiFiModule("Atlas", Serial, LittleFS);
+WiFiModuleClass wifi("Atlas", Serial, LittleFS);
+
+String processor_portal(const String &var)
+{
+  if (var == "HELLO_FROM_TEMPLATE")
+    return F("Hello world!");
+  return String();
+}
 
 void setup()
 {
-  Serial.begin(SERIAL_BAUD, SERIAL_8N1, SERIAL_TX_ONLY);
+  Serial.begin(SERIAL_BAUD);
   LittleFS.begin();
-  WiFiModule.setup();
+  wifi.setup();
+
+  wifi.getWebServer().on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/panel.html", "text/html", false, processor_portal);
+  });
 }
 
 void loop()
 {
-  WiFiModule.loop();
+  wifi.loop();
 }

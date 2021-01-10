@@ -25,6 +25,13 @@ WiFiModuleClass::WiFiModuleClass(String ap_ssid,
 {
 }
 
+String processor(const String &var)
+{
+    if (var == "HELLO_FROM_TEMPLATE")
+        return F("Hello world!");
+    return String();
+}
+
 void WiFiModuleClass::setup()
 {
     // start WiFi
@@ -92,9 +99,9 @@ void WiFiModuleClass::setup()
                        networkJson["encrypted"] = WiFi.encryptionType(i) != ENC_TYPE_NONE;
                    }
 
-                   String s;
-                   serializeJson(doc, s);
-                   request->send(200, F("application/json"), s); // experience is this takes 2ms until here
+                   AsyncResponseStream *response = request->beginResponseStream("application/json");
+                   serializeJson(doc, *response);
+                   request->send(response); // experience is this takes 2ms until here
                })
         .setFilter(ON_AP_FILTER);
 
@@ -107,9 +114,13 @@ void WiFiModuleClass::setup()
         .setFilter(ON_STA_FILTER);
 
     // captive portal only responds in AP wifi connections
+    _web_server.on("/index.html", HTTP_GET, [this](AsyncWebServerRequest *request) {
+                   request->send(_fs, "/portal.html", "text/html", false, processor);
+               })
+        .setFilter(ON_AP_FILTER);
+    _web_server.rewrite("/", "/index.html").setFilter(ON_AP_FILTER);
+
     _web_server.serveStatic("/static/", _fs, "/static/", SETUP_HTTP_CACHE_CONTROL);
-    _web_server.serveStatic("/index.html", _fs, "/portal.html", SETUP_HTTP_CACHE_CONTROL).setFilter(ON_AP_FILTER);
-    _web_server.rewrite("/", "/index.html");
 
     // redirect to /portal.html when called from AP to create captive portal
     _web_server.onNotFound([this](AsyncWebServerRequest *request) {
